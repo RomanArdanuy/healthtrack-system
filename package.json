@@ -9,9 +9,15 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "web": "turbo run dev --filter=web",
+    "mobile": "turbo run dev --filter=mobile",
+    "api": "turbo run dev --filter=@healthtrack/api"
   },
   "devDependencies": {
-    "turbo": "^2.4.4"
+    "turbo": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
