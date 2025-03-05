@@ -1,7 +1,6 @@
-// apps/mobile/src/hooks/useAuth.ts
 import { useState, useEffect, createContext, useContext } from 'react';
-import { createApi } from "@healthtrack/api";
-import { User } from '../../../packages/api/src/types'; // Usando ruta relativa
+import { createApi } from '@healthtrack/api';
+import { User } from '@healthtrack/api/types';
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 

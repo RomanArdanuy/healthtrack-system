@@ -1,12 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { createApi } from '@healthtrack/api'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createApi } from '@healthtrack/api';
+import * as SecureStore from 'expo-secure-store';
 
 // Definir el tipo para el contexto de la API
 interface ApiContextType {
   patientsApi: ReturnType<typeof createApi>['patients'];
   appointmentsApi: ReturnType<typeof createApi>['appointments'];
-  measurementsApi: ReturnType<typeof createApi>['measurements'];
   refreshApis: (newToken: string) => void;
 }
 
@@ -19,10 +18,10 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [apis, setApis] = useState(createApi());
 
   useEffect(() => {
-    // Obtener el token del almacenamiento local al cargar
+    // Obtener el token del almacenamiento seguro al cargar
     const loadToken = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem('auth_token');
+        const storedToken = await SecureStore.getItemAsync('auth_token');
         if (storedToken) {
           setToken(storedToken);
           setApis(createApi(storedToken));
@@ -46,7 +45,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       value={{ 
         patientsApi: apis.patients, 
         appointmentsApi: apis.appointments, 
-        measurementsApi: apis.measurements,
         refreshApis 
       }}
     >

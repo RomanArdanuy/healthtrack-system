@@ -1,5 +1,5 @@
 // packages/api/src/client/index.ts
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { User, Patient, Professional, Appointment, Message, Conversation } from '../types';
 
 // Creamos una instancia de Axios con configuración base
@@ -37,17 +37,17 @@ export const createAuthApi = (baseURL?: string) => {
   const client = createApiClient(baseURL);
 
   return {
-    login: (email: string, password: string) => 
-      client.post<{ token: string, user: User }>('/auth/login', { email, password }),
+    login: (email: string, password: string): Promise<{ token: string, user: User }> => 
+      client.post('/auth/login', { email, password }),
     
-    logout: (token: string) => {
+    logout: (token: string): Promise<void> => {
       const authenticatedClient = createApiClient(baseURL, token);
       return authenticatedClient.post('/auth/logout');
     },
     
-    getProfile: (token: string) => {
+    getProfile: (token: string): Promise<User> => {
       const authenticatedClient = createApiClient(baseURL, token);
-      return authenticatedClient.get<User>('/auth/profile');
+      return authenticatedClient.get('/auth/profile');
     }
   };
 };
@@ -57,19 +57,19 @@ export const createPatientApi = (token: string, baseURL?: string) => {
   const client = createApiClient(baseURL, token);
 
   return {
-    getAll: () => 
-      client.get<Patient[]>('/patients'),
+    getAll: (): Promise<Patient[]> => 
+      client.get('/patients'),
     
-    getById: (id: string) => 
-      client.get<Patient>(`/patients/${id}`),
+    getById: (id: string): Promise<Patient> => 
+      client.get(`/patients/${id}`),
     
-    create: (patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>) => 
-      client.post<Patient>('/patients', patient),
+    create: (patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>): Promise<Patient> => 
+      client.post('/patients', patient),
     
-    update: (id: string, patient: Partial<Patient>) => 
-      client.put<Patient>(`/patients/${id}`, patient),
+    update: (id: string, patient: Partial<Patient>): Promise<Patient> => 
+      client.put(`/patients/${id}`, patient),
     
-    delete: (id: string) => 
+    delete: (id: string): Promise<void> => 
       client.delete(`/patients/${id}`)
   };
 };
@@ -79,33 +79,33 @@ export const createAppointmentApi = (token: string, baseURL?: string) => {
   const client = createApiClient(baseURL, token);
 
   return {
-    getAll: () => 
-      client.get<Appointment[]>('/appointments'),
+    getAll: (): Promise<Appointment[]> => 
+      client.get('/appointments'),
     
-    getById: (id: string) => 
-      client.get<Appointment>(`/appointments/${id}`),
+    getById: (id: string): Promise<Appointment> => 
+      client.get(`/appointments/${id}`),
     
-    getByPatient: (patientId: string) => 
-      client.get<Appointment[]>(`/appointments/patient/${patientId}`),
+    getByPatient: (patientId: string): Promise<Appointment[]> => 
+      client.get(`/appointments/patient/${patientId}`),
     
-    getByProfessional: (professionalId: string) => 
-      client.get<Appointment[]>(`/appointments/professional/${professionalId}`),
+    getByProfessional: (professionalId: string): Promise<Appointment[]> => 
+      client.get(`/appointments/professional/${professionalId}`),
     
-    getByDate: (date: string, professionalId?: string) => {
+    getByDate: (date: string, professionalId?: string): Promise<Appointment[]> => {
       const params = professionalId ? { professionalId } : {};
-      return client.get<Appointment[]>(`/appointments/date/${date}`, { params });
+      return client.get(`/appointments/date/${date}`, { params });
     },
     
-    create: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => 
-      client.post<Appointment>('/appointments', appointment),
+    create: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> => 
+      client.post('/appointments', appointment),
     
-    update: (id: string, appointment: Partial<Appointment>) => 
-      client.put<Appointment>(`/appointments/${id}`, appointment),
+    update: (id: string, appointment: Partial<Appointment>): Promise<Appointment> => 
+      client.put(`/appointments/${id}`, appointment),
     
-    updateStatus: (id: string, status: string) => 
-      client.patch<Appointment>(`/appointments/${id}/status`, { status }),
+    updateStatus: (id: string, status: string): Promise<Appointment> => 
+      client.patch(`/appointments/${id}/status`, { status }),
     
-    delete: (id: string) => 
+    delete: (id: string): Promise<void> => 
       client.delete(`/appointments/${id}`)
   };
 };
@@ -115,17 +115,17 @@ export const createMessageApi = (token: string, baseURL?: string) => {
   const client = createApiClient(baseURL, token);
 
   return {
-    getConversations: () => 
-      client.get<Conversation[]>('/conversations'),
+    getConversations: (): Promise<Conversation[]> => 
+      client.get('/conversations'),
     
-    getMessages: (conversationId: string) => 
-      client.get<Message[]>(`/conversations/${conversationId}/messages`),
+    getMessages: (conversationId: string): Promise<Message[]> => 
+      client.get(`/conversations/${conversationId}/messages`),
     
-    sendMessage: (conversationId: string, content: string) => 
-      client.post<Message>(`/conversations/${conversationId}/messages`, { content }),
+    sendMessage: (conversationId: string, content: string): Promise<Message> => 
+      client.post(`/conversations/${conversationId}/messages`, { content }),
     
-    markAsRead: (messageId: string) => 
-      client.put<void>(`/messages/${messageId}/read`)
+    markAsRead: (messageId: string): Promise<void> => 
+      client.put(`/messages/${messageId}/read`)
   };
 };
 

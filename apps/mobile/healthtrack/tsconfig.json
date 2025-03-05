@@ -1,12 +1,12 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  },
-  "paths": {
-    "@/*": ["./src/*"],
-    "@healthtrack/api": ["../../packages/api/src"],
-    "@healthtrack/ui": ["../../packages/ui/src"],
-    "@healthtrack/api/types/user" : ["../../packages/api/src/types/user"]
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@healthtrack/api": ["../../../packages/api/src"],
+      "@healthtrack/ui": ["../../../packages/ui/src"],
+      "@healthtrack/api/types": ["../../../packages/api/src/types"]
+    }
   }
 }
