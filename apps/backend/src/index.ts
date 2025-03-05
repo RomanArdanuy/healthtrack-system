@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
+import patientRoutes from '@/routes/patient.routes';
 
 // Configurar variables de entorno
 dotenv.config();
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 // Rutas
 app.use('/api/auth', authRoutes);
+app.use('/api/patients', patientRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
@@ -42,3 +44,4 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
+
