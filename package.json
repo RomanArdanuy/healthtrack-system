@@ -4,14 +4,16 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/mobile/healthtrack"
   ],
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "web": "turbo run dev --filter=web",
-    "mobile": "turbo run dev --filter=mobile",
+    "mobile": "cd apps/mobile/healthtrack && yarn start",
     "api": "turbo run dev --filter=@healthtrack/api"
   },
   "devDependencies": {
