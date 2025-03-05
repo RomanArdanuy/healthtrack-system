@@ -21,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@healthtrack/api": ["../../packages/api/src"],
-      "@healthtrack/ui": ["../../packages/ui/src"]
+      "@healthtrack/ui": ["../../packages/ui/src"],
+      "@healthtrack/api/types/user" : ["../../packages/api/src/types/user"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,8 +1,8 @@
 // apps/mobile/src/hooks/useAuth.ts
 import { useState, useEffect, createContext, useContext } from 'react';
-import { createApi } from '@shared/api';
-import { User } from '@shared/types/user';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createApi } from "@healthtrack/api";
+import { User } from '../../../packages/api/src/types'; // Usando ruta relativa
+import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 
 interface AuthContextType {
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Comprobar si hay un token almacenado al cargar la app
     const checkToken = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem('auth_token');
+        const storedToken = await SecureStore.getItemAsync('auth_token');
         if (storedToken) {
           setToken(storedToken);
           getProfile();
@@ -53,8 +53,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       const response = await api.auth.login(email, password);
       
-      // Guardar el token en AsyncStorage
-      await AsyncStorage.setItem('auth_token', response.token);
+      // Guardar el token de forma segura
+      await SecureStore.setItemAsync('auth_token', response.token);
       setToken(response.token);
       setUser(response.user);
       
@@ -76,8 +76,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await api.auth.logout(token);
       }
       
-      // Limpiar el estado y AsyncStorage
-      await AsyncStorage.removeItem('auth_token');
+      // Limpiar el token almacenado
+      await SecureStore.deleteItemAsync('auth_token');
       setToken(null);
       setUser(null);
       
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err) {
       console.error('Get profile error:', err);
       // Si hay un error al obtener el perfil, probablemente el token ha expirado
-      await AsyncStorage.removeItem('auth_token');
+      await SecureStore.deleteItemAsync('auth_token');
       setToken(null);
       setUser(null);
       setError('La sesión ha expirado, por favor inicie sesión de nuevo');

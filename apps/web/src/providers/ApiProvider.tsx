@@ -1,12 +1,11 @@
 // apps/web/src/providers/ApiProvider.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
-import { createApi } from '@shared/api';
+import { createApi } from '@healthtrack/api';
 
 // Definir el tipo para el contexto de la API
 interface ApiContextType {
   patientsApi: ReturnType<typeof createApi>['patients'];
   appointmentsApi: ReturnType<typeof createApi>['appointments'];
-  measurementsApi: ReturnType<typeof createApi>['measurements'];
   refreshApis: (newToken: string) => void;
 }
 
@@ -38,7 +37,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       value={{ 
         patientsApi: apis.patients, 
         appointmentsApi: apis.appointments, 
-        measurementsApi: apis.measurements,
         refreshApis 
       }}
     >

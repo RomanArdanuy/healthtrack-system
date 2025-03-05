@@ -1,7 +1,7 @@
 // apps/web/src/hooks/useAuth.ts
 import { useState, useEffect, createContext, useContext } from 'react';
-import { createApi } from '@shared/api';
-import { User } from '@shared/types/user';
+import { createApi } from '@healthtrack/api';
+import { User } from '@healthtrack/api/types/user';
 import { useRouter } from 'next/router';
 
 interface AuthContextType {
