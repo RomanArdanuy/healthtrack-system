@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import patientRoutes from '@/routes/patient.routes';
+import appointmentRoutes from '@/routes/appointment.routes';
 
 // Configurar variables de entorno
 dotenv.config();
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
