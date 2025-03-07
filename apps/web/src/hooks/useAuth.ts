@@ -4,18 +4,25 @@ import {
     createUseAuth
   } from '@healthtrack/auth';
   import { AuthStorage, AuthNavigation } from '@healthtrack/types';
-  import { useRouter } from 'next/router';
+  import { useRouter } from 'next/navigation'; // Cambiado a next/navigation
   
   // Create web-specific storage implementation
   const webStorage: AuthStorage = {
     getToken: async () => {
-      return localStorage.getItem('auth_token');
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem('auth_token');
+      }
+      return null;
     },
     setToken: async (token: string) => {
-      localStorage.setItem('auth_token', token);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('auth_token', token);
+      }
     },
     removeToken: async () => {
-      localStorage.removeItem('auth_token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token');
+      }
     }
   };
   
@@ -24,7 +31,7 @@ import {
   
   // Create the auth provider component with web-specific implementations
   export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const router = useRouter();
+    const router = useRouter(); // Este es del App Router ahora
     
     // Web-specific navigation implementation
     const webNavigation: AuthNavigation = {
