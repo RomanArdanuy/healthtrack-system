@@ -1,6 +1,6 @@
 // packages/api/src/client/index.ts
 import axios, { AxiosInstance } from 'axios';
-import { User, Patient, Professional, Appointment, Message, Conversation } from '../types';
+import { User, Patient, Professional, Appointment, Message, Conversation } from '@healthtrack/types';
 
 // Creamos una instancia de Axios con configuración base
 const createApiClient = (baseURL?: string, token?: string): AxiosInstance => {

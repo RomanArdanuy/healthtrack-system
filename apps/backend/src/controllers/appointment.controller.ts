@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import appointmentService from '@/services/appointment.service';
-import { AppointmentStatus } from '@shared/types/appointment';
+import { AppointmentStatus } from '@healthtrack/types';
 
 // Get all appointments
 const getAllAppointments = async (req: Request, res: Response) => {

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["esnext"],
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "composite": true,
+    "declaration": true
+  },
+  "paths": {
+    "@/*": ["./src/*"],
+    "@healthtrack/types": ["../../packages/types/src"],
+    "@healthtrack/api": ["../../packages/api/src"],
+    "@healthtrack/ui": ["../../packages/ui/src"],
+    "@healthtrack/auth": ["../../packages/auth/src"]
+    },
+  "exclude": ["**/node_modules", "**/dist"]
+}

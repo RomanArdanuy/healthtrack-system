@@ -11,8 +11,10 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../../packages/api/src/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@healthtrack/api": ["../../packages/api/src"],
+      "@healthtrack/ui": ["../../packages/ui/src"],
+      "@healthtrack/api/types/user" : ["../../packages/api/src/types/user"]
     }
   },
   "include": ["src/**/*"],

@@ -1,4 +1,4 @@
-import { Appointment, AppointmentStatus } from '@shared/types/appointment';
+import { Appointment, AppointmentStatus } from '@healthtrack/types';
 
 // Simulate a database for initial development
 const appointments: Appointment[] = [

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api } from '@healthtrack/api';
+import { createApi } from '@healthtrack/api';
 import { Card } from '@healthtrack/ui';
 
 export default function Dashboard() {

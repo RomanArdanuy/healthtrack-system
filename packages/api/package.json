@@ -8,10 +8,12 @@
     "build": "tsc",
     "dev": "tsc -w"
   },
+  
   "devDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@healthtrack/types": "*",
     "axios": "^1.8.1"
   }
 }

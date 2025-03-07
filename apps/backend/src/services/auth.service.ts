@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { UserRole } from '@shared/types/user';
+import { UserRole } from '@healthtrack/types';
 
 // Configuración
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';

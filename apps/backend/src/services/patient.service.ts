@@ -1,5 +1,5 @@
 // apps/backend/src/services/patient.service.ts
-import { Patient, UserRole } from '@shared/types/user';
+import { Patient, UserRole } from '@healthtrack/types';
 
 // Simulamos una base de datos para desarrollo inicial
 // En un entorno real, esto sería reemplazado por una BD real
