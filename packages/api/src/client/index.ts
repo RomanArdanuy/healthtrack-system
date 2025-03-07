@@ -1,4 +1,3 @@
-// packages/api/src/client/index.ts
 import axios, { AxiosInstance } from 'axios';
 import { User, Patient, Professional, Appointment, Message, Conversation } from '@healthtrack/types';
 

@@ -1,57 +1,31 @@
-// apps/web/src/providers/ApiProvider.tsx
-import { createContext, useContext, useState, useEffect } from 'react';
-import { createApi } from '@healthtrack/api';
+import React from 'react';
+import { 
+  createApiContext, 
+  createApiProvider, 
+  createUseApi 
+} from '@healthtrack/api';
+import { useAuth } from '../hooks/useAuth';
 
-// Definir el tipo para el contexto de la API
-interface ApiContextType {
-  patientsApi: ReturnType<typeof createApi>['patients'];
-  appointmentsApi: ReturnType<typeof createApi>['appointments'];
-  refreshApis: (newToken: string) => void;
-}
+// Create the context
+const ApiContext = createApiContext();
 
-// Crear el contexto
-const ApiContext = createContext<ApiContextType | undefined>(undefined);
-
-// Proveedor del contexto
+// Web-specific implementation
 export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [apis, setApis] = useState(createApi());
-
-  useEffect(() => {
-    // Obtener el token del almacenamiento local al cargar
-    const storedToken = localStorage.getItem('auth_token');
-    if (storedToken) {
-      setToken(storedToken);
-      setApis(createApi(storedToken));
-    }
-  }, []);
-
-  // Función para actualizar las APIs con un nuevo token
-  const refreshApis = (newToken: string) => {
-    setToken(newToken);
-    setApis(createApi(newToken));
+  const auth = useAuth();
+  
+  // Create a function to get the token
+  // Since your AuthContextType doesn't have a token property,
+  // we'll use localStorage to get the token
+  const getToken = () => {
+    return localStorage.getItem('auth_token');
   };
-
-  return (
-    <ApiContext.Provider 
-      value={{ 
-        patientsApi: apis.patients, 
-        appointmentsApi: apis.appointments, 
-        refreshApis 
-      }}
-    >
-      {children}
-    </ApiContext.Provider>
-  );
+  
+  // Use the factory function to create the provider
+  const ApiProviderComponent = createApiProvider(ApiContext, getToken);
+  
+  // Return the component with children - note the function call syntax
+  return ApiProviderComponent({ children });
 };
 
-// Hook para usar el contexto
-export const useApi = () => {
-  const context = useContext(ApiContext);
-  
-  if (context === undefined) {
-    throw new Error('useApi must be used within an ApiProvider');
-  }
-  
-  return context;
-};
+// Create the hook
+export const useApi = createUseApi(ApiContext);
