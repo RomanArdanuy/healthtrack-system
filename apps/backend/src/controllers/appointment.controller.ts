@@ -1,6 +1,15 @@
 import { Request, Response } from 'express';
 import appointmentService from '@/services/appointment.service';
-import { AppointmentStatus } from '@healthtrack/types';
+// Importa el enum de Prisma directamente
+import { AppointmentStatus } from '@prisma/client';
+
+interface RequestWithUser extends Request {
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
+}
 
 // Get all appointments
 const getAllAppointments = async (req: Request, res: Response) => {
@@ -73,7 +82,7 @@ const getAppointmentsByDate = async (req: Request, res: Response) => {
 };
 
 // Create a new appointment
-const createAppointment = async (req: Request, res: Response) => {
+const createAppointment = async (req: RequestWithUser, res: Response) => {
   try {
     const appointmentData = req.body;
     
@@ -84,7 +93,14 @@ const createAppointment = async (req: Request, res: Response) => {
       });
     }
     
-    const newAppointment = await appointmentService.createAppointment(appointmentData);
+    // Añadir el ID de quién crea la cita (normalmente el usuario autenticado)
+    const createdById = req.user?.id || appointmentData.professionalId;
+    
+    const newAppointment = await appointmentService.createAppointment({
+      ...appointmentData,
+      createdById
+    });
+    
     return res.status(201).json(newAppointment);
   } catch (error) {
     console.error('Error creating appointment:', error);
@@ -117,11 +133,12 @@ const updateAppointmentStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
     
-    if (!status || !Object.values(AppointmentStatus).includes(status as AppointmentStatus)) {
+    // Validar que el status es válido según el enum de Prisma
+    if (!status || !Object.values(AppointmentStatus).includes(status)) {
       return res.status(400).json({ message: 'Invalid status value' });
     }
     
-    const updatedAppointment = await appointmentService.updateAppointmentStatus(id, status as AppointmentStatus);
+    const updatedAppointment = await appointmentService.updateAppointmentStatus(id, status);
     
     if (!updatedAppointment) {
       return res.status(404).json({ message: 'Appointment not found' });

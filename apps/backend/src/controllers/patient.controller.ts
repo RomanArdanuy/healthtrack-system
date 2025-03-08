@@ -1,4 +1,3 @@
-// apps/backend/src/controllers/patient.controller.ts
 import { Request, Response } from 'express';
 import patientService from '@/services/patient.service';
 

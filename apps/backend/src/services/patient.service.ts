@@ -1,92 +1,167 @@
 // apps/backend/src/services/patient.service.ts
-import { Patient, UserRole } from '@healthtrack/types';
-
-// Simulamos una base de datos para desarrollo inicial
-// En un entorno real, esto sería reemplazado por una BD real
-const patients: Patient[] = [
-  {
-    id: '1',
-    name: 'María',
-    surname: 'García',
-    email: 'maria@example.com',
-    phone: '612345678',
-    birthDate: '1985-05-12',
-    address: 'Calle Principal 123, Barcelona',
-    emergencyContact: 'Juan García - 678912345',
-    professionalId: '1',
-    role: UserRole.PATIENT,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    name: 'Carlos',
-    surname: 'Rodríguez',
-    email: 'carlos@example.com',
-    phone: '623456789',
-    birthDate: '1972-11-30',
-    address: 'Avenida Central 45, Barcelona',
-    emergencyContact: 'Ana Rodríguez - 678123456',
-    professionalId: '1',
-    role: UserRole.PATIENT,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
+import { prisma } from '../lib/prisma';
+import { UserRole } from '@prisma/client';
 
 // Obtener todos los pacientes
 const getAllPatients = async () => {
-  return patients;
+  return prisma.user.findMany({
+    where: {
+      role: UserRole.PATIENT
+    },
+    include: {
+      patientProfile: true
+    }
+  });
 };
 
 // Obtener paciente por ID
 const getPatientById = async (id: string) => {
-  return patients.find(patient => patient.id === id);
+  return prisma.user.findUnique({
+    where: {
+      id,
+      role: UserRole.PATIENT
+    },
+    include: {
+      patientProfile: true
+    }
+  });
 };
 
 // Obtener pacientes de un profesional específico
 const getPatientsByProfessionalId = async (professionalId: string) => {
-  return patients.filter(patient => patient.professionalId === professionalId);
+  return prisma.user.findMany({
+    where: {
+      role: UserRole.PATIENT,
+      patientProfile: {
+        professionalId
+      }
+    },
+    include: {
+      patientProfile: true
+    }
+  });
 };
 
 // Crear un nuevo paciente
-const createPatient = async (patientData: Omit<Patient, 'id' | 'createdAt' | 'updatedAt' | 'role'>) => {
-  const newPatient: Patient = {
-    ...patientData,
-    id: (patients.length + 1).toString(),
-    role: UserRole.PATIENT, // Asegurarse de asignar el rol correcto
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  patients.push(newPatient);
-  return newPatient;
+const createPatient = async (patientData: {
+  email: string;
+  password: string;
+  name: string;
+  surname: string;
+  phone?: string;
+  birthDate?: string;
+  address?: string;
+  emergencyContact?: string;
+  professionalId: string;
+}) => {
+  try {
+    // Crear usuario y perfil de paciente en una transacción
+    return await prisma.$transaction(async (tx) => {
+      // Crear usuario base
+      const newUser = await tx.user.create({
+        data: {
+          email: patientData.email,
+          password: patientData.password, // Nota: Esto debería estar hasheado antes
+          name: patientData.name,
+          surname: patientData.surname,
+          phone: patientData.phone,
+          role: UserRole.PATIENT
+        }
+      });
+      
+      // Crear perfil de paciente
+      await tx.patient.create({
+        data: {
+          userId: newUser.id,
+          birthDate: patientData.birthDate,
+          address: patientData.address,
+          emergencyContact: patientData.emergencyContact,
+          professionalId: patientData.professionalId
+        }
+      });
+      
+      // Devolver usuario con su perfil
+      return tx.user.findUnique({
+        where: { id: newUser.id },
+        include: { patientProfile: true }
+      });
+    });
+  } catch (error) {
+    console.error('Error creating patient:', error);
+    throw error;
+  }
 };
 
 // Actualizar un paciente existente
-const updatePatient = async (id: string, patientData: Partial<Patient>) => {
-  const index = patients.findIndex(patient => patient.id === id);
-  
-  if (index === -1) return null;
-  
-  const updatedPatient = {
-    ...patients[index],
-    ...patientData,
-    updatedAt: new Date().toISOString()
-  };
-  
-  patients[index] = updatedPatient;
-  return updatedPatient;
+const updatePatient = async (id: string, patientData: {
+  name?: string;
+  surname?: string;
+  email?: string;
+  phone?: string;
+  birthDate?: string;
+  address?: string;
+  emergencyContact?: string;
+  professionalId?: string;
+}) => {
+  try {
+    // Separar datos para actualizar usuario y perfil
+    const { birthDate, address, emergencyContact, professionalId, ...userData } = patientData;
+    
+    // Actualizar en transacción
+    return await prisma.$transaction(async (tx) => {
+      // Actualizar usuario base si hay datos
+      if (Object.keys(userData).length > 0) {
+        await tx.user.update({
+          where: { id },
+          data: userData
+        });
+      }
+      
+      // Actualizar perfil de paciente si hay datos
+      if (birthDate || address || emergencyContact || professionalId) {
+        // Obtener el ID del perfil del paciente
+        const patientProfile = await tx.patient.findFirst({
+          where: { userId: id }
+        });
+        
+        if (patientProfile) {
+          await tx.patient.update({
+            where: { id: patientProfile.id },
+            data: {
+              birthDate,
+              address,
+              emergencyContact,
+              professionalId
+            }
+          });
+        }
+      }
+      
+      // Devolver usuario actualizado con su perfil
+      return tx.user.findUnique({
+        where: { id },
+        include: { patientProfile: true }
+      });
+    });
+  } catch (error) {
+    console.error('Error updating patient:', error);
+    return null;
+  }
 };
 
 // Eliminar un paciente
 const deletePatient = async (id: string) => {
-  const index = patients.findIndex(patient => patient.id === id);
-  
-  if (index === -1) return false;
-  
-  patients.splice(index, 1);
-  return true;
+  try {
+    // Al eliminar el usuario, el perfil del paciente se eliminará 
+    // automáticamente debido a la relación Cascade
+    await prisma.user.delete({
+      where: { id }
+    });
+    return true;
+  } catch (error) {
+    console.error('Error deleting patient:', error);
+    return false;
+  }
 };
 
 export default {

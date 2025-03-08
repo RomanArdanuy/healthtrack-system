@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import patientRoutes from '@/routes/patient.routes';
 import appointmentRoutes from '@/routes/appointment.routes';
-
+import { prisma } from './lib/prisma';
 // Configurar variables de entorno
 dotenv.config();
 
@@ -40,6 +40,13 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
+
+// Función para cerrar conexiones de Prisma al apagar
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
 
 // Iniciar servidor
 app.listen(PORT, () => {

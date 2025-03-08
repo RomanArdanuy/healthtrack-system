@@ -1,7 +1,18 @@
+// apps/backend/src/controllers/auth.controller.ts
 import { Request, Response } from 'express';
 import authService from '../services/auth.service';
 
+// Añade esta interfaz si no la tienes ya en algún lugar
+interface RequestWithUser extends Request {
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
+}
+
 export const login = async (req: Request, res: Response) => {
+  // Este método está correcto, no necesita cambios
   try {
     const { email, password } = req.body;
     
@@ -22,9 +33,9 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const getProfile = async (req: Request, res: Response) => {
+export const getProfile = async (req: RequestWithUser, res: Response) => {
+  // Usar la interfaz extendida
   try {
-    // El userId se añade desde el middleware de autenticación
     const userId = req.user?.id;
     
     if (!userId) {
@@ -44,15 +55,38 @@ export const getProfile = async (req: Request, res: Response) => {
   }
 };
 
+// Añade el método register si quieres exponer esta funcionalidad
+export const register = async (req: Request, res: Response) => {
+  try {
+    const userData = req.body;
+    
+    if (!userData.email || !userData.password || !userData.name || !userData.surname || !userData.role) {
+      return res.status(400).json({ 
+        message: 'Datos incompletos. Se requiere email, contraseña, nombre, apellido y rol' 
+      });
+    }
+    
+    const result = await authService.registerUser(userData);
+    
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
+    }
+    
+    return res.status(201).json(result.data);
+  } catch (error) {
+    console.error('Error en register:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
 export const logout = (req: Request, res: Response) => {
-  // En una implementación con JWT, el logout se maneja principalmente en el cliente
-  // eliminando el token, pero podríamos implementar una lista negra de tokens en una
-  // fase posterior del proyecto
+  // Este método está correcto
   return res.status(200).json({ message: 'Sesión cerrada con éxito' });
 };
 
 export default {
   login,
   getProfile,
+  register, // Añade el nuevo método
   logout
 };

@@ -9,8 +9,12 @@ router.use(authMiddleware.authenticateToken);
 
 // Rutas CRUD básicas
 router.get('/', patientController.getAllPatients);
-router.get('/:id', patientController.getPatientById);
+
+// Coloca la ruta específica ANTES de las genéricas
 router.get('/professional/:professionalId', patientController.getPatientsByProfessional);
+
+// Ahora las rutas genéricas con parámetros
+router.get('/:id', patientController.getPatientById);
 router.post('/', patientController.createPatient);
 router.put('/:id', patientController.updatePatient);
 router.delete('/:id', patientController.deletePatient);
