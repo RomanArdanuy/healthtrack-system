@@ -17,14 +17,14 @@
     "api": "turbo run dev --filter=@healthtrack/api"
   },
   "devDependencies": {
-    "turbo": "^1.10.0"
+    "turbo": "^2.4.4"
   },
   "engines": {
     "node": ">=16.0.0"
   },
   "resolutions": {
-  "semver": "7.7.1",
-  "**/semver": "7.7.1",
-  "axios": "^1.8.2"
-}
+    "semver": "7.7.1",
+    "**/semver": "7.7.1",
+    "axios": "^1.8.2"
+  }
 }
