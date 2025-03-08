@@ -23,6 +23,8 @@
     "node": ">=16.0.0"
   },
   "resolutions": {
-  "semver": "7.7.1"
+  "semver": "7.7.1",
+  "**/semver": "7.7.1"
+
 }
 }
