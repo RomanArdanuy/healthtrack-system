@@ -14,9 +14,13 @@
     "lint": "turbo run lint",
     "web": "turbo run dev --filter=web",
     "mobile": "cd apps/mobile/healthtrack && yarn start",
-    "api": "turbo run dev --filter=@healthtrack/api"
+    "api": "turbo run dev --filter=@healthtrack/api",
+    "backend": "turbo run dev --filter=backend",
+    "dev:web": "turbo run dev --filter=web --filter=backend",
+    "dev:mobile": "concurrently \"yarn backend\" \"yarn mobile\""
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "turbo": "^2.4.4"
   },
   "engines": {

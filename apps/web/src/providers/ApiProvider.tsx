@@ -16,10 +16,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
   
   // Create a function to get the token
-  // Since your AuthContextType doesn't have a token property,
-  // we'll use localStorage to get the token
+  // Check if we're in the browser before accessing localStorage
   const getToken = () => {
-    return localStorage.getItem('auth_token');
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('auth_token');
+    }
+    return null;
   };
   
   // Use the factory function to create the provider
