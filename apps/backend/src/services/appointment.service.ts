@@ -1,108 +1,114 @@
-import { Appointment, AppointmentStatus } from '@healthtrack/types';
-
-// Simulate a database for initial development
-const appointments: Appointment[] = [
-  {
-    id: '1',
-    patientId: '1',
-    professionalId: '1',
-    date: '2025-03-15',
-    startTime: '09:00',
-    endTime: '09:30',
-    status: AppointmentStatus.CONFIRMED,
-    reason: 'Regular check-up',
-    notes: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    patientId: '2',
-    professionalId: '1',
-    date: '2025-03-16',
-    startTime: '10:00',
-    endTime: '10:30',
-    status: AppointmentStatus.SCHEDULED,
-    reason: 'Medication review',
-    notes: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
+import { prisma } from '../lib/prisma';
+import { AppointmentStatus } from '@prisma/client';
 
 // Get all appointments
 const getAllAppointments = async () => {
-  return appointments;
+  return prisma.appointment.findMany();
 };
 
 // Get appointment by ID
 const getAppointmentById = async (id: string) => {
-  return appointments.find(appointment => appointment.id === id);
+  return prisma.appointment.findUnique({
+    where: { id }
+  });
 };
 
 // Get appointments by patient
 const getAppointmentsByPatientId = async (patientId: string) => {
-  return appointments.filter(appointment => appointment.patientId === patientId);
+  return prisma.appointment.findMany({
+    where: { patientId }
+  });
 };
 
 // Get appointments by professional
 const getAppointmentsByProfessionalId = async (professionalId: string) => {
-  return appointments.filter(appointment => appointment.professionalId === professionalId);
+  return prisma.appointment.findMany({
+    where: { professionalId }
+  });
 };
 
 // Get appointments for a specific date
 const getAppointmentsByDate = async (date: string, professionalId?: string) => {
-  let filtered = appointments.filter(appointment => appointment.date === date);
+  const dateObj = new Date(date);
   
+  // Crear condición base para la fecha
+  const where: any = {
+    date: dateObj
+  };
+  
+  // Añadir filtro por profesional si se proporciona
   if (professionalId) {
-    filtered = filtered.filter(appointment => appointment.professionalId === professionalId);
+    where.professionalId = professionalId;
   }
   
-  return filtered;
+  return prisma.appointment.findMany({ where });
 };
 
 // Create a new appointment
-const createAppointment = async (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
-  const newAppointment: Appointment = {
-    ...appointmentData,
-    id: (appointments.length + 1).toString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
+const createAppointment = async (appointmentData: {
+  patientId: string;
+  professionalId: string;
+  createdById: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: AppointmentStatus;
+  notes?: string;
+  reason?: string;
+}) => {
+  // Convertir la fecha de string a Date
+  const dateObj = new Date(appointmentData.date);
   
-  appointments.push(newAppointment);
-  return newAppointment;
+  return prisma.appointment.create({
+    data: {
+      ...appointmentData,
+      date: dateObj
+    }
+  });
 };
 
 // Update an existing appointment
-const updateAppointment = async (id: string, appointmentData: Partial<Appointment>) => {
-  const index = appointments.findIndex(appointment => appointment.id === id);
+const updateAppointment = async (id: string, appointmentData: {
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  status?: AppointmentStatus;
+  notes?: string;
+  reason?: string;
+}) => {
+  // Preparar datos para actualización
+  const updateData: any = { ...appointmentData };
   
-  if (index === -1) return null;
+  // Convertir fecha si se proporciona
+  if (appointmentData.date) {
+    updateData.date = new Date(appointmentData.date);
+  }
   
-  const updatedAppointment = {
-    ...appointments[index],
-    ...appointmentData,
-    updatedAt: new Date().toISOString()
-  };
-  
-  appointments[index] = updatedAppointment;
-  return updatedAppointment;
+  return prisma.appointment.update({
+    where: { id },
+    data: updateData
+  });
 };
 
 // Update appointment status
 const updateAppointmentStatus = async (id: string, status: AppointmentStatus) => {
-  return updateAppointment(id, { status });
+  return prisma.appointment.update({
+    where: { id },
+    data: { status }
+  });
 };
 
 // Delete an appointment
 const deleteAppointment = async (id: string) => {
-  const index = appointments.findIndex(appointment => appointment.id === id);
-  
-  if (index === -1) return false;
-  
-  appointments.splice(index, 1);
-  return true;
+  try {
+    await prisma.appointment.delete({
+      where: { id }
+    });
+    return true;
+  } catch (error) {
+    console.error('Error deleting appointment:', error);
+    return false;
+  }
 };
 
 export default {

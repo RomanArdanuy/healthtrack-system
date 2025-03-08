@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PATIENT
+  PROFESSIONAL
+  ADMIN
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String
+  name           String
+  surname        String
+  role           UserRole
+  phone          String?
+  profilePicture String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relaciones
+  patientProfile        Patient?
+  professionalProfile   Professional?
+  sentMessages          Message[]       @relation("Sender")
+  receivedMessages      Message[]       @relation("Receiver")
+  createdAppointments   Appointment[]   @relation("AppointmentCreator")
+  patientAppointments   Appointment[]   @relation("PatientAppointment")
+  professionalAppointments Appointment[] @relation("ProfessionalAppointment")
+}
+
+model Patient {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  birthDate        String?
+  address          String?
+  emergencyContact String?
+  professionalId   String
+  professional     Professional @relation(fields: [professionalId], references: [id])
+  
+  // Relaciones
+  measurements     Measurement[]
+}
+
+model Professional {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty     String?
+  licenseNumber String?
+  
+  // Relaciones
+  patients      Patient[]
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  createdById    String
+  createdBy      User              @relation("AppointmentCreator", fields: [createdById], references: [id])
+  patientId      String
+  patient        User              @relation("PatientAppointment", fields: [patientId], references: [id])
+  professionalId String
+  professional   User              @relation("ProfessionalAppointment", fields: [professionalId], references: [id])
+  date           DateTime
+  startTime      String
+  endTime        String
+  status         AppointmentStatus
+  notes          String?
+  reason         String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  attachments String[]
+}
+
+model Measurement {
+  id        String   @id @default(uuid())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  type      String
+  value     Float
+  unit      String
+  date      DateTime @default(now())
+  notes     String?
+}

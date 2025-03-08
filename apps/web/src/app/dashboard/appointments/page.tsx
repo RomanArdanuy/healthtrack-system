@@ -66,8 +66,8 @@ export default function PatientsPage() {
           },
           { 
             id: '4', 
-            name: 'Ana', 
-            surname: 'Martínez', 
+            name: 'Juancho', 
+            surname: 'Talarga', 
             email: 'ana.martinez@example.com', 
             phone: '645678901', 
             createdAt: '2023-03-10' 

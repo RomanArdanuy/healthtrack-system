@@ -4,6 +4,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { AuthProvider } from '../hooks/useAuth';
 import { ApiProvider } from '../providers/ApiProvider';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,7 +18,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <ApiProvider>
-            {children}
+            <AuthGuard>
+              {children}
+            </AuthGuard>
           </ApiProvider>
         </AuthProvider>
       </body>

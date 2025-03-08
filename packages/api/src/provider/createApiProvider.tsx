@@ -1,12 +1,9 @@
-import React, { createContext, useContext, ReactNode, Context } from 'react';
+import React, { createContext, useContext } from 'react';
 import { createApi } from '../client';
 
-// Define the type for what will be stored in the context
+// Define el tipo para el contexto
 export interface ApiContextValue {
-  auth: ReturnType<typeof createApi>['auth'];
-  patients: ReturnType<typeof createApi>['patients'];
-  appointments: ReturnType<typeof createApi>['appointments'];
-  messages: ReturnType<typeof createApi>['messages'];
+  [key: string]: any;
 }
 
 export function createApiContext() {
@@ -14,17 +11,27 @@ export function createApiContext() {
 }
 
 export function createApiProvider(
-  ApiContext: Context<ApiContextValue | null>,
-  getToken: () => string | null | undefined
+  ApiContext: React.Context<ApiContextValue | null>, 
+  getToken: () => string | null
 ) {
-  return ({ children }: { children: ReactNode }) => {
-    // Get token using the provided function
-    const token = getToken();
+  return ({ children }: { children: React.ReactNode }) => {
+    // Obtener el token de forma segura
+    let token: string | undefined;
     
-    // Create API client with current token
-    // The createApi function expects string | undefined, so we need to handle null
-    const apiClient = createApi(token === null ? undefined : token);
+    try {
+      const rawToken = getToken();
+      // Convertir null a undefined para la API
+      token = rawToken === null ? undefined : rawToken;
+    } catch (error) {
+      console.error('Error al obtener el token:', error);
+      // En caso de error, simplemente continuamos sin token
+      token = undefined;
+    }
     
+    // Crear API client con el token (o undefined si no hay token)
+    const apiClient = createApi(token);
+    
+    // Proporcionar el cliente API a través del contexto
     return (
       <ApiContext.Provider value={apiClient}>
         {children}
@@ -33,10 +40,10 @@ export function createApiProvider(
   };
 }
 
-export function createUseApi(ApiContext: Context<ApiContextValue | null>) {
+export function createUseApi(ApiContext: React.Context<ApiContextValue | null>) {
   return () => {
     const context = useContext(ApiContext);
-    if (!context) {
+    if (context === undefined || context === null) {
       throw new Error('useApi must be used within an ApiProvider');
     }
     return context;
