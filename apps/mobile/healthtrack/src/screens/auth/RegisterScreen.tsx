@@ -1,4 +1,3 @@
-// apps/mobile/healthtrack/src/screens/auth/RegisterScreen.tsx
 import React from 'react';
 import {
   View,

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../hooks/useAuth';
-import AuthNavigator from './AuthNavigator.tsx';
+import AuthNavigator from './AuthNavigator';
 import DashboardNavigator from './DashboardNavigator';
 import LoadingScreen from '../screens/LoadingScreen';
 
