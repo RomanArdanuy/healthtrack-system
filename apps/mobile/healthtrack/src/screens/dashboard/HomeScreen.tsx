@@ -16,7 +16,13 @@ import { AppointmentStatus } from '@healthtrack/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {  } from "../../navigation/"
+import { AppointmentsStackParamList } from '../../navigation/AppointmentsNavigator';
+import { PatientsStackParamList } from '../../navigation/PatientsNavigator';
+
+// Tipo para la navegación a Patients
+type CombinedNavigationProp = NativeStackNavigationProp<AppointmentsStackParamList> & {
+  navigate: (name: 'Patients', params: { screen: keyof PatientsStackParamList }) => void;
+};
 
 // Define helper component for the statistics cards
 const StatCard = ({ title, value, icon, color }: { title: string; value: string | number; icon: string; color: string }) => (
@@ -34,7 +40,7 @@ const StatCard = ({ title, value, icon, color }: { title: string; value: string 
 const HomeScreen = () => {
   const { user } = useAuth();
   const api = useApi();
-  const navigation = useNavigation<NativeStackNavigationProp<>>();
+  const navigation = useNavigation<CombinedNavigationProp>();
   
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState({
@@ -138,9 +144,7 @@ const HomeScreen = () => {
               <TouchableOpacity 
                 style={styles.actionButton}
                 onPress={() => {
-                  // Navigate to patients list
-                  // This would need proper typing in a real app
-                  (navigation as any).navigate('Patients', { screen: 'PatientList' });
+                  navigation.navigate('Patients', { screen: 'PatientList' });
                 }}
               >
                 <Ionicons name="people-outline" size={22} color="#4F46E5" />
@@ -232,4 +236,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 16,
     shadowColor: '#000',
-    shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: '47%',
+    marginBottom: 8,
+  },
+  actionText: {
+    fontSize: 14,
+    color: '#374151',
+    marginLeft: 8,
+  },
+});
+
+export default HomeScreen;

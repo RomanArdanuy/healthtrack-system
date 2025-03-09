@@ -15,7 +15,7 @@ import {
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppointmentsStackParamList } from '../../../navigation/AppointmentsNavigator';
-import { useApi } from '../../../providers/ApiProvider';
+import { useApi } from '@/provider/ApiProvider';
 import { useAuth } from '../../../hooks/useAuth';
 import { AppointmentStatus } from '@healthtrack/types';
 import { UserRole } from '@healthtrack/types';

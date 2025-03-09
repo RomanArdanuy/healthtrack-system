@@ -1,8 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AppointmentListScreen from '../screens/dashboard/appointments/AppointmentListScreen';
-import AppointmentDetailScreen from '../screens/dashboard/appointments/AppointmentDetailScreen';
-import AppointmentFormScreen from '../screens/dashboard/appointments/AppointmentFormScreen';
+import AppointmentFormScreen from '@/screens/dashboard/appointments/AppointmentFormScreen';
+import AppointmentDetailScreen from '@/screens/dashboard/appointments/AppointmentDetailScreen';
 
 // Define our appointments stack navigator param list
 export type AppointmentsStackParamList = {

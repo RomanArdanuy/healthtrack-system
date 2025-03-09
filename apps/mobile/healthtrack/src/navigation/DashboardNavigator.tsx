@@ -6,7 +6,7 @@ import PatientsNavigator from './PatientsNavigator';
 import AppointmentsNavigator from './AppointmentsNavigator';
 import ProfileScreen from '../screens/dashboard/ProfileScreen';
 import { useAuth } from '../hooks/useAuth';
-import { UserRole } from '@shared/types/user';
+import { UserRole } from '@healthtrack/types';
 
 // Define our dashboard tab navigator param list
 export type DashboardTabParamList = {
