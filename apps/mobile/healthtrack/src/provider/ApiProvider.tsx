@@ -1,4 +1,5 @@
-import React from 'react';
+// apps/mobile/healthtrack/src/providers/ApiProvider.tsx
+import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { 
   createApiContext, 
@@ -12,19 +13,28 @@ const ApiContext = createApiContext();
 // Crear el hook useApi
 export const useApi = createUseApi(ApiContext);
 
-// Función para obtener el token desde SecureStore
-const getToken = async () => {
-  try {
-    return await SecureStore.getItemAsync('auth_token');
-  } catch (error) {
-    console.error('Error al obtener token de SecureStore:', error);
-    return null;
-  }
-};
-
 // Proveedor de API para React Native
-export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Usar la factoría para crear el provider con la función específica para móvil
+export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
+  const [token, setToken] = useState<string | null>(null);
+  
+  // Cargar el token cuando el componente se monta
+  useEffect(() => {
+    const loadToken = async () => {
+      try {
+        const storedToken = await SecureStore.getItemAsync('auth_token');
+        setToken(storedToken);
+      } catch (error) {
+        console.error('Error al obtener token de SecureStore:', error);
+      }
+    };
+    
+    loadToken();
+  }, []);
+  
+  // Función sincrónica que devuelve el token actual
+  const getToken = () => token;
+  
+  // Usar la factoría para crear el provider
   const MobileApiProvider = createApiProvider(ApiContext, getToken);
   
   // Devolver el provider con los children

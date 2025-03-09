@@ -49,7 +49,7 @@ const AppointmentFormScreen = () => {
     date: '',
     startTime: '',
     endTime: '',
-    status: AppointmentStatus.scheduled,
+    status: AppointmentStatus.SCHEDULED,
     reason: '',
     notes: '',
   });
@@ -79,7 +79,7 @@ const AppointmentFormScreen = () => {
           date: '2025-03-15',
           startTime: '10:00',
           endTime: '10:30',
-          status: AppointmentStatus.scheduled,
+          status: AppointmentStatus.SCHEDULED,
           reason: 'Consulta rutinaria',
           notes: 'Paciente con antecedentes de hipertensión. Revisión de medicación actual.',
         };

@@ -1,7 +1,8 @@
+// apps/mobile/healthtrack/src/navigation/AppNavigator.tsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthProvider } from '../providers/AuthProvider';
-import { ApiProvider } from '../providers/ApiProvider';
+import { AuthProvider } from '@/provider/AuthProvider';
+import { ApiProvider } from '@/provider/ApiProvider';
 import MainNavigator from './MainNavigator';
 
 const AppNavigator = () => {
@@ -16,4 +17,4 @@ const AppNavigator = () => {
   );
 };
 
-export default AppNavigator
+export default AppNavigator;
