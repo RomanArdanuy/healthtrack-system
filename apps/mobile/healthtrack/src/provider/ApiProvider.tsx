@@ -1,65 +1,32 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { createApi } from '@healthtrack/api';
+import React from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { 
+  createApiContext, 
+  createApiProvider, 
+  createUseApi 
+} from '@healthtrack/api';
 
-// Definir el tipo para el contexto de la API
-interface ApiContextType {
-  patientsApi: ReturnType<typeof createApi>['patients'];
-  appointmentsApi: ReturnType<typeof createApi>['appointments'];
-  refreshApis: (newToken: string) => void;
-}
+// Crear el contexto de API
+const ApiContext = createApiContext();
 
-// Crear el contexto
-const ApiContext = createContext<ApiContextType | undefined>(undefined);
+// Crear el hook useApi
+export const useApi = createUseApi(ApiContext);
 
-// Proveedor del contexto
-export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [apis, setApis] = useState(createApi());
-
-  useEffect(() => {
-    // Obtener el token del almacenamiento seguro al cargar
-    const loadToken = async () => {
-      try {
-        const storedToken = await SecureStore.getItemAsync('auth_token');
-        if (storedToken) {
-          setToken(storedToken);
-          setApis(createApi(storedToken));
-        }
-      } catch (err) {
-        console.error('Error loading token:', err);
-      }
-    };
-
-    loadToken();
-  }, []);
-
-  // Función para actualizar las APIs con un nuevo token
-  const refreshApis = (newToken: string) => {
-    setToken(newToken);
-    setApis(createApi(newToken));
-  };
-
-  return (
-    <ApiContext.Provider 
-      value={{ 
-        patientsApi: apis.patients, 
-        appointmentsApi: apis.appointments, 
-        refreshApis 
-      }}
-    >
-      {children}
-    </ApiContext.Provider>
-  );
+// Función para obtener el token desde SecureStore
+const getToken = async () => {
+  try {
+    return await SecureStore.getItemAsync('auth_token');
+  } catch (error) {
+    console.error('Error al obtener token de SecureStore:', error);
+    return null;
+  }
 };
 
-// Hook para usar el contexto
-export const useApi = () => {
-  const context = useContext(ApiContext);
+// Proveedor de API para React Native
+export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Usar la factoría para crear el provider con la función específica para móvil
+  const MobileApiProvider = createApiProvider(ApiContext, getToken);
   
-  if (context === undefined) {
-    throw new Error('useApi must be used within an ApiProvider');
-  }
-  
-  return context;
+  // Devolver el provider con los children
+  return <MobileApiProvider>{children}</MobileApiProvider>;
 };

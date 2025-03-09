@@ -1,69 +1,58 @@
 import React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { 
-  createAuthContext, 
-  createAuthProvider, 
-  createUseAuth 
+  createAuthContext,
+  createAuthProvider,
+  createUseAuth
 } from '@healthtrack/auth';
 import { AuthStorage, AuthNavigation } from '@healthtrack/types';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
-// Implementación de almacenamiento específica para móvil usando AsyncStorage
-const authStorage: AuthStorage = {
-  getToken: async () => {
-    try {
-      return await AsyncStorage.getItem('auth_token');
-    } catch (error) {
-      console.error('Error reading token from AsyncStorage:', error);
-      return null;
-    }
-  },
-  
-  setToken: async (token: string) => {
-    try {
-      await AsyncStorage.setItem('auth_token', token);
-    } catch (error) {
-      console.error('Error storing token in AsyncStorage:', error);
-    }
-  },
-  
-  removeToken: async () => {
-    try {
-      await AsyncStorage.removeItem('auth_token');
-    } catch (error) {
-      console.error('Error removing token from AsyncStorage:', error);
-    }
-  }
-};
-
-// Crear el contexto de autenticación
+// Crear una instancia del contexto de autenticación
 const AuthContext = createAuthContext();
 
-// Crear la función para el hook useAuth
+// Hook para usar autenticación
 export const useAuth = createUseAuth(AuthContext);
 
-// Crear el provider de autenticación para React Native
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // La función de navegación para React Native
-  const handleNavigate = (routeName: string) => {
-    // Esta función sería utilizada por el provider para navegar entre pantallas
-    console.log(`Navigation requested to: ${routeName}`);
-    // En un caso real, usaríamos useNavigation() pero eso requeriría un componente funcional
-    // Esta lógica se manejará internamente en el AuthProvider
-  };
-
+// Proveedor de autenticación para React Native
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Usamos useNavigation dentro de un componente funcional
+  const navigation = useNavigation();
+  
   // Implementación de navegación específica para móvil
-  const authNavigation: AuthNavigation = {
-    navigateToHome: () => handleNavigate('Home'),
-    navigateToLogin: () => handleNavigate('Login')
+  const mobileNavigation: AuthNavigation = {
+    navigateToHome: () => {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Dashboard' }],
+        })
+      );
+    },
+    navigateToLogin: () => {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Auth' }],
+        })
+      );
+    }
   };
 
-  // Usar la factoría para crear el provider
-  const ProviderComponent = createAuthProvider(
-    AuthContext,
-    authStorage,
-    authNavigation
+  // Almacenamiento seguro para React Native usando SecureStore
+  const secureStorage: AuthStorage = {
+    getToken: () => SecureStore.getItemAsync('auth_token'),
+    setToken: (token) => SecureStore.setItemAsync('auth_token', token),
+    removeToken: () => SecureStore.deleteItemAsync('auth_token'),
+  };
+  
+  // Creamos el proveedor de autenticación con la navegación y almacenamiento seguros
+  const MobileAuthProvider = createAuthProvider(
+    AuthContext, 
+    secureStorage,
+    mobileNavigation
   );
 
-  // Retornar el provider con los children
-  return ProviderComponent({ children });
+  // Devolvemos el provider con los children
+  return <MobileAuthProvider>{children}</MobileAuthProvider>;
 };
