@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,6 +15,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { appColors } from '../../styles';
+import { Button } from '@rneui/themed';
+import { componentStyles } from '../../styles';
 
 type ForgotPasswordScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
@@ -64,32 +66,59 @@ const ForgotPasswordScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: appColors.background }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollView}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20 }}>
           <TouchableOpacity 
-            style={styles.backButton}
+            style={{ 
+              width: 40, 
+              height: 40, 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              marginBottom: 20 
+            }}
             onPress={handleBackToLogin}
           >
-            <Ionicons name="arrow-back" size={24} color="#4F46E5" />
+            <Ionicons name="arrow-back" size={24} color={appColors.primary} />
           </TouchableOpacity>
 
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Recuperar contraseña</Text>
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ fontSize: 28, fontWeight: 'bold', color: appColors.textPrimary }}>
+              Recuperar contraseña
+            </Text>
           </View>
 
           {!submitted ? (
-            <View style={styles.formContainer}>
-              <Text style={styles.instructionText}>
+            <View style={{ 
+              backgroundColor: 'white', 
+              borderRadius: 10, 
+              padding: 20, 
+              shadowColor: '#000', 
+              shadowOffset: { width: 0, height: 2 }, 
+              shadowOpacity: 0.1, 
+              shadowRadius: 4, 
+              elevation: 3 
+            }}>
+              <Text style={{ fontSize: 16, color: appColors.textSecondary, marginBottom: 20, lineHeight: 24 }}>
                 Introduzca su correo electrónico y le enviaremos instrucciones para restablecer su contraseña.
               </Text>
 
-              <Text style={styles.label}>Correo electrónico</Text>
+              <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+                Correo electrónico
+              </Text>
               <TextInput
-                style={styles.input}
+                style={{ 
+                  height: 50, 
+                  borderWidth: 1, 
+                  borderColor: appColors.border, 
+                  borderRadius: 6, 
+                  marginBottom: 20, 
+                  paddingHorizontal: 12, 
+                  backgroundColor: appColors.background 
+                }}
                 placeholder="nombre@ejemplo.com"
                 value={email}
                 onChangeText={setEmail}
@@ -98,33 +127,53 @@ const ForgotPasswordScreen = () => {
                 editable={!loading}
               />
 
-              <TouchableOpacity
-                style={styles.submitButton}
+              <Button
+                {...componentStyles.Button.base}
+                {...componentStyles.Button.primary}
+                title="Enviar instrucciones"
                 onPress={handleSubmit}
                 disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <Text style={styles.submitButtonText}>Enviar instrucciones</Text>
-                )}
-              </TouchableOpacity>
+                loading={loading}
+              />
             </View>
           ) : (
-            <View style={styles.successContainer}>
-              <Ionicons name="checkmark-circle" size={64} color="#10B981" />
-              <Text style={styles.successText}>
+            <View style={{ 
+              backgroundColor: 'white', 
+              borderRadius: 10, 
+              padding: 20, 
+              shadowColor: '#000', 
+              shadowOffset: { width: 0, height: 2 }, 
+              shadowOpacity: 0.1, 
+              shadowRadius: 4, 
+              elevation: 3, 
+              alignItems: 'center' 
+            }}>
+              <Ionicons name="checkmark-circle" size={64} color={appColors.success} />
+              <Text style={{ 
+                fontSize: 16, 
+                color: appColors.textPrimary, 
+                marginTop: 16, 
+                marginBottom: 8, 
+                textAlign: 'center', 
+                fontWeight: '500' 
+              }}>
                 Se han enviado instrucciones para restablecer su contraseña a {email}.
               </Text>
-              <Text style={styles.successSubtext}>
+              <Text style={{ 
+                fontSize: 14, 
+                color: appColors.textSecondary, 
+                marginBottom: 24, 
+                textAlign: 'center' 
+              }}>
                 Por favor, revise su correo electrónico y siga las instrucciones.
               </Text>
-              <TouchableOpacity
-                style={styles.backToLoginButton}
+              <Button
+                {...componentStyles.Button.base}
+                {...componentStyles.Button.primary}
+                title="Volver al inicio de sesión"
                 onPress={handleBackToLogin}
-              >
-                <Text style={styles.backToLoginText}>Volver al inicio de sesión</Text>
-              </TouchableOpacity>
+                containerStyle={{ width: '100%' }}
+              />
             </View>
           )}
         </ScrollView>
@@ -132,113 +181,5 @@ const ForgotPasswordScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  headerContainer: {
-    marginBottom: 24,
-  },
-  headerText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  formContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  instructionText: {
-    fontSize: 16,
-    color: '#4B5563',
-    marginBottom: 20,
-    lineHeight: 24,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#374151',
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 6,
-    marginBottom: 20,
-    paddingHorizontal: 12,
-    backgroundColor: '#F9FAFB',
-  },
-  submitButton: {
-    backgroundColor: '#4F46E5',
-    paddingVertical: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  successContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    alignItems: 'center',
-  },
-  successText: {
-    fontSize: 16,
-    color: '#1F2937',
-    marginTop: 16,
-    marginBottom: 8,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  successSubtext: {
-    fontSize: 14,
-    color: '#4B5563',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  backToLoginButton: {
-    backgroundColor: '#4F46E5',
-    paddingVertical: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    width: '100%',
-  },
-  backToLoginText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
 
 export default ForgotPasswordScreen;

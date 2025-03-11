@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
@@ -18,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppointmentsStackParamList } from '../../navigation/AppointmentsNavigator';
 import { PatientsStackParamList } from '../../navigation/PatientsNavigator';
+import { appColors } from '../../styles';
 
 // Tipo para la navegación a Patients
 type CombinedNavigationProp = NativeStackNavigationProp<AppointmentsStackParamList> & {
@@ -26,13 +26,33 @@ type CombinedNavigationProp = NativeStackNavigationProp<AppointmentsStackParamLi
 
 // Define helper component for the statistics cards
 const StatCard = ({ title, value, icon, color }: { title: string; value: string | number; icon: string; color: string }) => (
-  <View style={styles.statCard}>
-    <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
+  <View style={{ 
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: '47%',
+  }}>
+    <View style={{ 
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+      backgroundColor: color + '20'
+    }}>
       <Ionicons name={icon as any} size={22} color={color} />
     </View>
     <View>
-      <Text style={styles.statTitle}>{title}</Text>
-      <Text style={styles.statValue}>{value}</Text>
+      <Text style={{ fontSize: 14, color: appColors.textTertiary }}>{title}</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', color: appColors.textPrimary }}>{value}</Text>
     </View>
   </View>
 );
@@ -79,34 +99,40 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView edges={['left', 'right']} style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: appColors.background }}>
       <ScrollView
-        contentContainerStyle={styles.scrollView}
+        contentContainerStyle={{ padding: 16 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={loadData} />
         }
       >
-        <View style={styles.header}>
-          <Text style={styles.greeting}>Hola, {user?.name}</Text>
-          <Text style={styles.date}>{new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Text>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: appColors.textPrimary }}>
+            Hola, {user?.name}
+          </Text>
+          <Text style={{ fontSize: 16, color: appColors.textTertiary, marginTop: 4 }}>
+            {new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </Text>
         </View>
 
-        <View style={styles.statsContainer}>
-          <Text style={styles.sectionTitle}>Resumen</Text>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: appColors.textSecondary, marginBottom: 12 }}>
+            Resumen
+          </Text>
           
-          <View style={styles.statsGrid}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             <StatCard 
               title="Citas hoy" 
               value={stats.todayAppointments} 
               icon="calendar" 
-              color="#4F46E5" 
+              color={appColors.primary} 
             />
             
             <StatCard 
               title="Citas pendientes" 
               value={stats.pendingAppointments} 
               icon="time" 
-              color="#F59E0B" 
+              color={appColors.warning} 
             />
             
             {isProfessional && (
@@ -114,41 +140,88 @@ const HomeScreen = () => {
                 title="Pacientes" 
                 value={stats.totalPatients} 
                 icon="people" 
-                color="#10B981" 
+                color={appColors.success} 
               />
             )}
           </View>
         </View>
 
-        <View style={styles.actionsContainer}>
-          <Text style={styles.sectionTitle}>Acciones rápidas</Text>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: appColors.textSecondary, marginBottom: 12 }}>
+            Acciones rápidas
+          </Text>
           
-          <View style={styles.actionsGrid}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             <TouchableOpacity 
-              style={styles.actionButton}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 10,
+                padding: 16,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 2,
+                flexDirection: 'row',
+                alignItems: 'center',
+                minWidth: '47%',
+                marginBottom: 8,
+              }}
               onPress={() => navigation.navigate('AppointmentList')}
             >
-              <Ionicons name="calendar-outline" size={22} color="#4F46E5" />
-              <Text style={styles.actionText}>Ver citas</Text>
+              <Ionicons name="calendar-outline" size={22} color={appColors.primary} />
+              <Text style={{ fontSize: 14, color: appColors.textSecondary, marginLeft: 8 }}>
+                Ver citas
+              </Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('AppointmentForm')}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 10,
+                padding: 16,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 2,
+                flexDirection: 'row',
+                alignItems: 'center',
+                minWidth: '47%',
+                marginBottom: 8,
+              }}
+              onPress={() => navigation.navigate('AppointmentForm', {})}
             >
-              <Ionicons name="add-circle-outline" size={22} color="#4F46E5" />
-              <Text style={styles.actionText}>Nueva cita</Text>
+              <Ionicons name="add-circle-outline" size={22} color={appColors.primary} />
+              <Text style={{ fontSize: 14, color: appColors.textSecondary, marginLeft: 8 }}>
+                Nueva cita
+              </Text>
             </TouchableOpacity>
             
             {isProfessional && (
               <TouchableOpacity 
-                style={styles.actionButton}
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  padding: 16,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 2,
+                  elevation: 2,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  minWidth: '47%',
+                  marginBottom: 8,
+                }}
                 onPress={() => {
                   navigation.navigate('Patients', { screen: 'PatientList' });
                 }}
               >
-                <Ionicons name="people-outline" size={22} color="#4F46E5" />
-                <Text style={styles.actionText}>Ver pacientes</Text>
+                <Ionicons name="people-outline" size={22} color={appColors.primary} />
+                <Text style={{ fontSize: 14, color: appColors.textSecondary, marginLeft: 8 }}>
+                  Ver pacientes
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -157,99 +230,5 @@ const HomeScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  scrollView: {
-    padding: 16,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  date: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginTop: 4,
-  },
-  statsContainer: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  statCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    minWidth: '47%',
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  statTitle: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
-  actionsContainer: {
-    marginBottom: 24,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  actionButton: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    minWidth: '47%',
-    marginBottom: 8,
-  },
-  actionText: {
-    fontSize: 14,
-    color: '#374151',
-    marginLeft: 8,
-  },
-});
 
 export default HomeScreen;

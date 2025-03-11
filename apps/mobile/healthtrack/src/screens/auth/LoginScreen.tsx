@@ -4,8 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,6 +13,9 @@ import { useAuth } from '../../hooks/useAuth';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { appColors } from '../../styles';
+import { Button } from '@rneui/themed';
+import { componentStyles } from '../../styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
@@ -37,25 +38,57 @@ const LoginScreen = ({ navigation }: Props) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: appColors.background }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>HealthTrack</Text>
-            <Text style={styles.subtitle}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20, justifyContent: 'center' }}>
+          <View style={{ alignItems: 'center', marginBottom: 40 }}>
+            <Text style={{ fontSize: 32, fontWeight: 'bold', color: appColors.primary, marginBottom: 10 }}>
+              HealthTrack
+            </Text>
+            <Text style={{ fontSize: 16, color: appColors.textTertiary, textAlign: 'center' }}>
               Gestión hospitalaria y monitorización remota de pacientes
             </Text>
           </View>
 
-          <View style={styles.formContainer}>
-            {error && <Text style={styles.errorText}>{error}</Text>}
+          <View style={{ 
+            backgroundColor: 'white', 
+            borderRadius: 10, 
+            padding: 20, 
+            shadowColor: '#000', 
+            shadowOffset: { width: 0, height: 2 }, 
+            shadowOpacity: 0.1, 
+            shadowRadius: 4, 
+            elevation: 3 
+          }}>
+            {error && (
+              <Text style={{ 
+                color: appColors.error, 
+                marginBottom: 16, 
+                padding: 10, 
+                backgroundColor: appColors.error + '15', 
+                borderRadius: 4, 
+                fontSize: 14 
+              }}>
+                {error}
+              </Text>
+            )}
 
-            <Text style={styles.label}>Correo electrónico</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+              Correo electrónico
+            </Text>
             <TextInput
-              style={styles.input}
+              style={{ 
+                height: 50, 
+                borderWidth: 1, 
+                borderColor: appColors.border, 
+                borderRadius: 6, 
+                marginBottom: 16, 
+                paddingHorizontal: 12, 
+                backgroundColor: appColors.background
+              }}
               placeholder="nombre@ejemplo.com"
               value={email}
               onChangeText={setEmail}
@@ -64,9 +97,19 @@ const LoginScreen = ({ navigation }: Props) => {
               testID="email-input"
             />
 
-            <Text style={styles.label}>Contraseña</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+              Contraseña
+            </Text>
             <TextInput
-              style={styles.input}
+              style={{ 
+                height: 50, 
+                borderWidth: 1, 
+                borderColor: appColors.border, 
+                borderRadius: 6, 
+                marginBottom: 16, 
+                paddingHorizontal: 12, 
+                backgroundColor: appColors.background
+              }}
               placeholder="Contraseña"
               value={password}
               onChangeText={setPassword}
@@ -75,110 +118,28 @@ const LoginScreen = ({ navigation }: Props) => {
             />
 
             <TouchableOpacity 
-              style={styles.forgotPasswordContainer}
-              onPress={() => Alert.alert('Contacte a su administrador para restablecer su contraseña')}
+              style={{ alignItems: 'flex-end', marginBottom: 16 }}
+              onPress={() => navigation.navigate('ForgotPassword')}
             >
-              <Text style={styles.forgotPasswordText}>¿Olvidó su contraseña?</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleLogin}
-              disabled={loading}
-              testID="login-button"
-            >
-              <Text style={styles.buttonText}>
-                {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+              <Text style={{ color: appColors.primary, fontSize: 14 }}>
+                ¿Olvidó su contraseña?
               </Text>
             </TouchableOpacity>
+
+            <Button
+              {...componentStyles.Button.base}
+              {...componentStyles.Button.primary}
+              title={loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+              onPress={handleLogin}
+              disabled={loading}
+              loading={loading}
+              testID="login-button"
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#4F46E5',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-  },
-  formContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#374151',
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 6,
-    marginBottom: 16,
-    paddingHorizontal: 12,
-    backgroundColor: '#F9FAFB',
-  },
-  forgotPasswordContainer: {
-    alignItems: 'flex-end',
-    marginBottom: 16,
-  },
-  forgotPasswordText: {
-    color: '#4F46E5',
-    fontSize: 14,
-  },
-  button: {
-    backgroundColor: '#4F46E5',
-    paddingVertical: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  errorText: {
-    color: '#DC2626',
-    marginBottom: 16,
-    padding: 10,
-    backgroundColor: '#FEE2E2',
-    borderRadius: 4,
-    fontSize: 14,
-  },
-});
 
 export default LoginScreen;
