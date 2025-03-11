@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
   ScrollView,
@@ -20,6 +19,8 @@ import { useAuth } from '../../../hooks/useAuth';
 import { AppointmentStatus } from '@healthtrack/types';
 import { UserRole } from '@healthtrack/types';
 import { Ionicons } from '@expo/vector-icons';
+import { appColors, componentStyles } from '../../../styles';
+import { Button, Input } from '@rneui/themed';
 
 // Tipo para la ruta
 type AppointmentFormRouteProp = RouteProp<AppointmentsStackParamList, 'AppointmentForm'>;
@@ -190,40 +191,61 @@ const AppointmentFormScreen = () => {
   
   if (fetching) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: appColors.background }}>
+        <ActivityIndicator size="large" color={appColors.primary} />
       </View>
     );
   }
   
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={{ flex: 1, backgroundColor: appColors.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={100}
     >
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.formContainer}>
+      <ScrollView style={{ flex: 1 }}>
+        <View style={{ padding: 16 }}>
           {/* Campo de paciente - Solo visible para profesionales */}
           {isProfessional && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Paciente *</Text>
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+                Paciente *
+              </Text>
               <TouchableOpacity 
-                style={styles.selectButton}
+                style={{ 
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                  borderWidth: 1,
+                  borderColor: appColors.border,
+                  borderRadius: 8,
+                  padding: 12,
+                }}
                 onPress={() => {
                   // En una aplicación real, aquí abriríamos un selector de pacientes
                   Alert.alert('Selector de pacientes', 'Aquí se mostraría un selector de pacientes');
                 }}
               >
-                <Text style={styles.selectButtonText}>
+                <Text style={{ fontSize: 16, color: appColors.primary }}>
                   {formData.patientId ? 'Cambiar paciente' : 'Seleccionar paciente'}
                 </Text>
-                <Ionicons name="chevron-forward" size={20} color="#4F46E5" />
+                <Ionicons name="chevron-forward" size={20} color={appColors.primary} />
               </TouchableOpacity>
+              
               {formData.patientId && (
-                <View style={styles.selectedItem}>
-                  <Ionicons name="person" size={16} color="#4F46E5" />
-                  <Text style={styles.selectedItemText}>Juan García</Text>
+                <View style={{ 
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: appColors.primary + '10',
+                  borderRadius: 4,
+                  padding: 8,
+                  marginTop: 8,
+                }}>
+                  <Ionicons name="person" size={16} color={appColors.primary} />
+                  <Text style={{ fontSize: 14, color: appColors.primary, marginLeft: 8 }}>
+                    Juan García
+                  </Text>
                 </View>
               )}
             </View>
@@ -231,65 +253,100 @@ const AppointmentFormScreen = () => {
           
           {/* Campo de profesional - Solo visible para pacientes */}
           {isPatient && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Profesional *</Text>
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+                Profesional *
+              </Text>
               <TouchableOpacity 
-                style={styles.selectButton}
+                style={{ 
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: 'white',
+                  borderWidth: 1,
+                  borderColor: appColors.border,
+                  borderRadius: 8,
+                  padding: 12,
+                }}
                 onPress={() => {
                   // En una aplicación real, aquí abriríamos un selector de profesionales
                   Alert.alert('Selector de profesionales', 'Aquí se mostraría un selector de profesionales');
                 }}
               >
-                <Text style={styles.selectButtonText}>
+                <Text style={{ fontSize: 16, color: appColors.primary }}>
                   {formData.professionalId ? 'Cambiar profesional' : 'Seleccionar profesional'}
                 </Text>
-                <Ionicons name="chevron-forward" size={20} color="#4F46E5" />
+                <Ionicons name="chevron-forward" size={20} color={appColors.primary} />
               </TouchableOpacity>
+              
               {formData.professionalId && (
-                <View style={styles.selectedItem}>
-                  <Ionicons name="medkit" size={16} color="#4F46E5" />
-                  <Text style={styles.selectedItemText}>Dr. Martínez</Text>
+                <View style={{ 
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: appColors.primary + '10',
+                  borderRadius: 4,
+                  padding: 8,
+                  marginTop: 8,
+                }}>
+                  <Ionicons name="medkit" size={16} color={appColors.primary} />
+                  <Text style={{ fontSize: 14, color: appColors.primary, marginLeft: 8 }}>
+                    Dr. Martínez
+                  </Text>
                 </View>
               )}
             </View>
           )}
           
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Fecha *</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.date}
-              onChangeText={(value) => handleChange('date', value)}
-              placeholder="AAAA-MM-DD"
-            />
-          </View>
+          <Input
+            {...componentStyles.Input}
+            label="Fecha *"
+            labelStyle={{ color: appColors.textSecondary }}
+            value={formData.date}
+            onChangeText={(value) => handleChange('date', value)}
+            placeholder="AAAA-MM-DD"
+          />
           
-          <View style={styles.timeContainer}>
-            <View style={[styles.inputGroup, styles.timeInput]}>
-              <Text style={styles.label}>Hora inicio *</Text>
-              <TextInput
-                style={styles.input}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
+            <View style={{ width: '48%' }}>
+              <Input
+                {...componentStyles.Input}
+                label="Hora inicio *"
+                labelStyle={{ color: appColors.textSecondary }}
                 value={formData.startTime}
                 onChangeText={(value) => handleChange('startTime', value)}
                 placeholder="HH:MM"
+                containerStyle={{ marginBottom: 0 }}
               />
             </View>
             
-            <View style={[styles.inputGroup, styles.timeInput]}>
-              <Text style={styles.label}>Hora fin *</Text>
-              <TextInput
-                style={styles.input}
+            <View style={{ width: '48%' }}>
+              <Input
+                {...componentStyles.Input}
+                label="Hora fin *"
+                labelStyle={{ color: appColors.textSecondary }}
                 value={formData.endTime}
                 onChangeText={(value) => handleChange('endTime', value)}
                 placeholder="HH:MM"
+                containerStyle={{ marginBottom: 0 }}
               />
             </View>
           </View>
           
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Motivo de la cita</Text>
+          <View style={{ marginBottom: 16 }}>
+            <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+              Motivo de la cita
+            </Text>
             <TextInput
-              style={styles.textArea}
+              style={{ 
+                backgroundColor: 'white',
+                borderWidth: 1,
+                borderColor: appColors.border,
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 16,
+                minHeight: 80,
+                textAlignVertical: 'top',
+              }}
               value={formData.reason}
               onChangeText={(value) => handleChange('reason', value)}
               placeholder="Describa el motivo de la cita"
@@ -300,10 +357,21 @@ const AppointmentFormScreen = () => {
           
           {/* Notas - Solo visible para profesionales */}
           {isProfessional && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Notas médicas</Text>
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8, color: appColors.textSecondary }}>
+                Notas médicas
+              </Text>
               <TextInput
-                style={styles.textArea}
+                style={{ 
+                  backgroundColor: 'white',
+                  borderWidth: 1,
+                  borderColor: appColors.border,
+                  borderRadius: 8,
+                  padding: 12,
+                  fontSize: 16,
+                  minHeight: 80,
+                  textAlignVertical: 'top',
+                }}
                 value={formData.notes}
                 onChangeText={(value) => handleChange('notes', value)}
                 placeholder="Notas para el profesional"
@@ -313,153 +381,34 @@ const AppointmentFormScreen = () => {
             </View>
           )}
           
-          <Text style={styles.requiredNote}>* Campos obligatorios</Text>
+          <Text style={{ fontSize: 12, color: appColors.textTertiary, marginTop: 8, marginBottom: 16 }}>
+            * Campos obligatorios
+          </Text>
           
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.cancelButton}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+            <Button
+              {...componentStyles.Button.base}
+              {...componentStyles.Button.outline}
+              title="Cancelar"
               onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
-            </TouchableOpacity>
+              containerStyle={{ flex: 1, marginRight: 8 }}
+              buttonStyle={{ borderColor: appColors.textTertiary }}
+              titleStyle={{ color: appColors.textTertiary }}
+            />
             
-            <TouchableOpacity
-              style={styles.saveButton}
+            <Button
+              {...componentStyles.Button.base}
+              {...componentStyles.Button.primary}
+              title={appointmentId ? 'Actualizar' : 'Guardar'}
               onPress={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Text style={styles.saveButtonText}>
-                  {appointmentId ? 'Actualizar' : 'Guardar'}
-                </Text>
-              )}
-            </TouchableOpacity>
+              loading={loading}
+              containerStyle={{ flex: 1, marginLeft: 8 }}
+            />
           </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  formContainer: {
-    padding: 16,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#374151',
-  },
-  input: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-  textArea: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  timeInput: {
-    flex: 0.48,
-  },
-  selectButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-  },
-  selectButtonText: {
-    fontSize: 16,
-    color: '#4F46E5',
-  },
-  selectedItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EEF2FF',
-    borderRadius: 4,
-    padding: 8,
-    marginTop: 8,
-  },
-  selectedItemText: {
-    fontSize: 14,
-    color: '#4F46E5',
-    marginLeft: 8,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  cancelButtonText: {
-    color: '#4B5563',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: '#4F46E5',
-    borderRadius: 8,
-    padding: 12,
-    alignItems: 'center',
-    marginLeft: 8,
-  },
-  saveButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  requiredNote: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-  },
-});
 
 export default AppointmentFormScreen;

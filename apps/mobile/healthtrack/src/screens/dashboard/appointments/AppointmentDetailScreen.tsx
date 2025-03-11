@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -16,6 +15,8 @@ import { useAuth } from '../../../hooks/useAuth';
 import { AppointmentStatus } from '@healthtrack/types';
 import { UserRole } from '@healthtrack/types';
 import { Ionicons } from '@expo/vector-icons';
+import { appColors, componentStyles } from '../../../styles';
+import { Button, Divider } from '@rneui/themed';
 
 // Tipo para la ruta
 type AppointmentDetailRouteProp = RouteProp<AppointmentsStackParamList, 'AppointmentDetail'>;
@@ -177,47 +178,59 @@ const AppointmentDetailScreen = () => {
   const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
       case AppointmentStatus.SCHEDULED:
-        return '#3B82F6'; // Blue
+        return appColors.info; // Blue
       case AppointmentStatus.CONFIRMED:
-        return '#10B981'; // Green
+        return appColors.success; // Green
       case AppointmentStatus.CANCELLED:
-        return '#EF4444'; // Red
+        return appColors.error; // Red
       case AppointmentStatus.COMPLETED:
-        return '#6B7280'; // Gray
+        return appColors.textTertiary; // Gray
       default:
-        return '#9CA3AF';
+        return appColors.textDisabled;
     }
   };
   
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: appColors.background }}>
+        <ActivityIndicator size="large" color={appColors.primary} />
       </View>
     );
   }
   
   if (!appointment) {
     return (
-      <View style={styles.errorContainer}>
-        <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
-        <Text style={styles.errorText}>No se encontró la cita</Text>
-        <TouchableOpacity
-          style={styles.backButton}
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: appColors.background }}>
+        <Ionicons name="alert-circle-outline" size={48} color={appColors.error} />
+        <Text style={{ fontSize: 16, color: appColors.textSecondary, textAlign: 'center', marginVertical: 16 }}>
+          No se encontró la cita
+        </Text>
+        <Button
+          {...componentStyles.Button.base}
+          {...componentStyles.Button.primary}
+          title="Volver"
           onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Volver</Text>
-        </TouchableOpacity>
+        />
       </View>
     );
   }
   
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.dateContainer}>
-          <Text style={styles.dateLabel}>Fecha y hora</Text>
-          <Text style={styles.dateValue}>
+    <ScrollView style={{ flex: 1, backgroundColor: appColors.background }}>
+      <View style={{ 
+        backgroundColor: 'white',
+        padding: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        borderBottomWidth: 1,
+        borderBottomColor: appColors.border,
+      }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 14, color: appColors.textTertiary, marginBottom: 4 }}>
+            Fecha y hora
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: appColors.textPrimary, marginBottom: 4 }}>
             {new Date(appointment.date).toLocaleDateString('es-ES', {
               weekday: 'long',
               year: 'numeric',
@@ -225,313 +238,176 @@ const AppointmentDetailScreen = () => {
               day: 'numeric'
             })}
           </Text>
-          <Text style={styles.timeValue}>
+          <Text style={{ fontSize: 16, color: appColors.textSecondary }}>
             {appointment.startTime} - {appointment.endTime}
           </Text>
         </View>
         
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(appointment.status) + '20' }]}>
-          <Text style={[styles.statusText, { color: getStatusColor(appointment.status) }]}>
+        <View style={{ 
+          paddingHorizontal: 10,
+          paddingVertical: 5,
+          borderRadius: 12,
+          marginLeft: 10,
+          backgroundColor: getStatusColor(appointment.status) + '20' 
+        }}>
+          <Text style={{ fontSize: 14, fontWeight: '500', color: getStatusColor(appointment.status) }}>
             {getStatusText(appointment.status)}
           </Text>
         </View>
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>
+      <View style={{ 
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        margin: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 2,
+      }}>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: appColors.textSecondary, marginBottom: 12 }}>
           {isPatient ? 'Información del profesional' : 'Información del paciente'}
         </Text>
         
         {isPatient ? (
           // Si el usuario es paciente, mostrar info del profesional
           <>
-            <View style={styles.infoRow}>
-              <Ionicons name="person-outline" size={20} color="#4F46E5" />
-              <Text style={styles.infoLabel}>Nombre:</Text>
-              <Text style={styles.infoValue}>{appointment.professionalName}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: appColors.background }}>
+              <Ionicons name="person-outline" size={20} color={appColors.primary} />
+              <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginLeft: 8, width: 100 }}>Nombre:</Text>
+              <Text style={{ flex: 1, fontSize: 14, color: appColors.textPrimary }}>{appointment.professionalName}</Text>
             </View>
             
             {appointment.professionalSpecialty && (
-              <View style={styles.infoRow}>
-                <Ionicons name="medkit-outline" size={20} color="#4F46E5" />
-                <Text style={styles.infoLabel}>Especialidad:</Text>
-                <Text style={styles.infoValue}>{appointment.professionalSpecialty}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: appColors.background }}>
+                <Ionicons name="medkit-outline" size={20} color={appColors.primary} />
+                <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginLeft: 8, width: 100 }}>Especialidad:</Text>
+                <Text style={{ flex: 1, fontSize: 14, color: appColors.textPrimary }}>{appointment.professionalSpecialty}</Text>
               </View>
             )}
           </>
         ) : (
           // Si el usuario es profesional, mostrar info del paciente
           <>
-            <View style={styles.infoRow}>
-              <Ionicons name="person-outline" size={20} color="#4F46E5" />
-              <Text style={styles.infoLabel}>Nombre:</Text>
-              <Text style={styles.infoValue}>{appointment.patientName}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: appColors.background }}>
+              <Ionicons name="person-outline" size={20} color={appColors.primary} />
+              <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginLeft: 8, width: 100 }}>Nombre:</Text>
+              <Text style={{ flex: 1, fontSize: 14, color: appColors.textPrimary }}>{appointment.patientName}</Text>
             </View>
             
             {appointment.patientEmail && (
-              <View style={styles.infoRow}>
-                <Ionicons name="mail-outline" size={20} color="#4F46E5" />
-                <Text style={styles.infoLabel}>Email:</Text>
-                <Text style={styles.infoValue}>{appointment.patientEmail}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: appColors.background }}>
+                <Ionicons name="mail-outline" size={20} color={appColors.primary} />
+                <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginLeft: 8, width: 100 }}>Email:</Text>
+                <Text style={{ flex: 1, fontSize: 14, color: appColors.textPrimary }}>{appointment.patientEmail}</Text>
               </View>
             )}
             
             {appointment.patientPhone && (
-              <View style={styles.infoRow}>
-                <Ionicons name="call-outline" size={20} color="#4F46E5" />
-                <Text style={styles.infoLabel}>Teléfono:</Text>
-                <Text style={styles.infoValue}>{appointment.patientPhone}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: appColors.background }}>
+                <Ionicons name="call-outline" size={20} color={appColors.primary} />
+                <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginLeft: 8, width: 100 }}>Teléfono:</Text>
+                <Text style={{ flex: 1, fontSize: 14, color: appColors.textPrimary }}>{appointment.patientPhone}</Text>
               </View>
             )}
           </>
         )}
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Detalles de la cita</Text>
+      <View style={{ 
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        marginHorizontal: 16,
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 2,
+      }}>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: appColors.textSecondary, marginBottom: 12 }}>
+          Detalles de la cita
+        </Text>
         
         {appointment.reason && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Motivo:</Text>
-            <Text style={styles.detailValue}>{appointment.reason}</Text>
+          <View style={{ marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginBottom: 4 }}>Motivo:</Text>
+            <Text style={{ fontSize: 14, color: appColors.textPrimary }}>{appointment.reason}</Text>
           </View>
         )}
         
         {appointment.notes && isProfessional && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Notas:</Text>
-            <Text style={styles.detailValue}>{appointment.notes}</Text>
+          <View style={{ marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginBottom: 4 }}>Notas:</Text>
+            <Text style={{ fontSize: 14, color: appColors.textPrimary }}>{appointment.notes}</Text>
           </View>
         )}
         
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Creada el:</Text>
-          <Text style={styles.detailValue}>
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 14, fontWeight: '500', color: appColors.textSecondary, marginBottom: 4 }}>Creada el:</Text>
+          <Text style={{ fontSize: 14, color: appColors.textPrimary }}>
             {new Date(appointment.createdAt).toLocaleDateString('es-ES')}
           </Text>
         </View>
       </View>
       
-      <View style={styles.actionsContainer}>
+      <View style={{ padding: 16, marginBottom: 16 }}>
         {/* Editar cita - Visible para todos */}
-        <TouchableOpacity
-          style={[styles.actionButton, styles.editButton]}
+        <Button
+          {...componentStyles.Button.base}
+          {...componentStyles.Button.outline}
+          title="Editar cita"
+          icon={<Ionicons name="create-outline" size={20} color={appColors.primary} style={{ marginRight: 8 }} />}
           onPress={handleEdit}
-        >
-          <Ionicons name="create-outline" size={20} color="#4F46E5" />
-          <Text style={styles.editButtonText}>Editar cita</Text>
-        </TouchableOpacity>
+          containerStyle={{ marginVertical: 8 }}
+        />
         
         {/* Botones específicos para profesionales */}
         {isProfessional && appointment.status === AppointmentStatus.SCHEDULED && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.confirmButton]}
+          <Button
+            {...componentStyles.Button.base}
+            type="solid"
+            title="Confirmar cita"
+            buttonStyle={{ backgroundColor: appColors.success }}
+            icon={<Ionicons name="checkmark-circle-outline" size={20} color="white" style={{ marginRight: 8 }} />}
             onPress={() => handleUpdateStatus(AppointmentStatus.CONFIRMED)}
-          >
-            <Ionicons name="checkmark-circle-outline" size={20} color="white" />
-            <Text style={styles.confirmButtonText}>Confirmar cita</Text>
-          </TouchableOpacity>
+            containerStyle={{ marginVertical: 8 }}
+          />
         )}
         
         {isProfessional && (appointment.status === AppointmentStatus.SCHEDULED || 
-                            appointment.status === AppointmentStatus.CONFIRMED) && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.completeButton]}
+                           appointment.status === AppointmentStatus.CONFIRMED) && (
+          <Button
+            {...componentStyles.Button.base}
+            type="solid"
+            title="Marcar como completada"
+            buttonStyle={{ backgroundColor: appColors.info }}
+            icon={<Ionicons name="checkmark-done-outline" size={20} color="white" style={{ marginRight: 8 }} />}
             onPress={() => handleUpdateStatus(AppointmentStatus.COMPLETED)}
-          >
-            <Ionicons name="checkmark-done-outline" size={20} color="white" />
-            <Text style={styles.completeButtonText}>Marcar como completada</Text>
-          </TouchableOpacity>
+            containerStyle={{ marginVertical: 8 }}
+          />
         )}
         
         {/* Cancelar cita - Visible para todos cuando no está completada ni cancelada */}
         {appointment.status !== AppointmentStatus.COMPLETED && 
          appointment.status !== AppointmentStatus.CANCELLED && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.cancelButton]}
+          <Button
+            {...componentStyles.Button.base}
+            type="outline"
+            title="Cancelar cita"
+            buttonStyle={{ borderColor: appColors.error }}
+            titleStyle={{ color: appColors.error }}
+            icon={<Ionicons name="close-circle-outline" size={20} color={appColors.error} style={{ marginRight: 8 }} />}
             onPress={handleDelete}
-          >
-            <Ionicons name="close-circle-outline" size={20} color="#EF4444" />
-            <Text style={styles.cancelButtonText}>Cancelar cita</Text>
-          </TouchableOpacity>
+            containerStyle={{ marginVertical: 8 }}
+          />
         )}
       </View>
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  header: {
-    backgroundColor: 'white',
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  dateContainer: {
-    flex: 1,
-  },
-  dateLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  dateValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  timeValue: {
-    fontSize: 16,
-    color: '#374151',
-  },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-    marginLeft: 10,
-  },
-  statusText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    marginHorizontal: 16,
-    marginTop: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-  },
-  infoLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#4B5563',
-    marginLeft: 8,
-    width: 100,
-  },
-  infoValue: {
-    flex: 1,
-    fontSize: 14,
-    color: '#1F2937',
-  },
-  detailRow: {
-    marginBottom: 12,
-  },
-  detailLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#4B5563',
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 14,
-    color: '#1F2937',
-  },
-  actionsContainer: {
-    padding: 16,
-    marginBottom: 16,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginVertical: 8,
-  },
-  editButton: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#4F46E5',
-  },
-  editButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#4F46E5',
-    marginLeft: 8,
-  },
-  confirmButton: {
-    backgroundColor: '#10B981',
-  },
-  confirmButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
-    marginLeft: 8,
-  },
-  completeButton: {
-    backgroundColor: '#3B82F6',
-  },
-  completeButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
-    marginLeft: 8,
-  },
-  cancelButton: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#EF4444',
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#EF4444',
-    marginLeft: 8,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#4B5563',
-    textAlign: 'center',
-    marginVertical: 16,
-  },
-  backButton: {
-    backgroundColor: '#4F46E5',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
 
 export default AppointmentDetailScreen;
