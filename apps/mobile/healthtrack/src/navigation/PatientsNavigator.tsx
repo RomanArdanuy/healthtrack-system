@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PatientListScreen from '../screens/dashboard/patients/PatientListScreen';
 import PatientDetailScreen from '../screens/dashboard/patients/PatientDetailScreen';
-import PatientFormScreen from '../screens/dashboard/patients/PatientFormScreen';
+import PatientFormScreen from '@/screens/dashboard/patients/PatientFormScreen';
 
 // Define our patients stack navigator param list
 export type PatientsStackParamList = {
