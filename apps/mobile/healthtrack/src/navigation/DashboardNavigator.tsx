@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/dashboard/HomeScreen';
 import PatientsNavigator from './PatientsNavigator';
 import AppointmentsNavigator from './AppointmentsNavigator';
-import ProfileScreen from '../screens/dashboard/ProfileScreen';
+import ProfileScreen from '@/screens/dashboard/ProfileScreen';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '@healthtrack/types';
 

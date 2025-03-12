@@ -7,7 +7,8 @@ const config = getDefaultConfig(__dirname);
 const extraNodeModules = {
     "@healthtrack/ui": path.resolve(__dirname, "../../../packages/ui"),
     "@healthtrack/api": path.resolve(__dirname, "../../../packages/api"),
-    "nativewind": path.resolve(__dirname, "node_modules/nativewind"),
+    "@healthtrack/auth": path.resolve(__dirname, "../../../packages/auth"),
+    "@healthtrack/types": path.resolve(__dirname, "../../../packages/types"),
 };
 
 config.resolver.extraNodeModules = new Proxy(extraNodeModules, {
@@ -18,17 +19,19 @@ config.resolver.extraNodeModules = new Proxy(extraNodeModules, {
 config.watchFolders = [
     path.resolve(__dirname, "../../../packages/ui"),
     path.resolve(__dirname, "../../../packages/api"),
+    path.resolve(__dirname, "../../../packages/auth"),
+    path.resolve(__dirname, "../../../packages/types"),
 ];
 
-// Configuración de NativeWind
-config.transformer = {
-    ...config.transformer,
-    babelTransformerPath: require.resolve("metro-react-native-babel-transformer"),
-    getCustomTransformers: () => ({
-        before: [
-            require("nativewind/babel"),
-        ],
-    }),
-};
+// Eliminar la referencia a NativeWind y sus transformadores
+// config.transformer = {
+//     ...config.transformer,
+//     babelTransformerPath: require.resolve("metro-react-native-babel-transformer"),
+//     getCustomTransformers: () => ({
+//         before: [
+//             require("nativewind/babel"),
+//         ],
+//     }),
+// };
 
 module.exports = config;
