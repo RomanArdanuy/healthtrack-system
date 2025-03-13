@@ -1,14 +1,24 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "composite": true,
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@healthtrack/types": ["../../../packages/types/src"],
       "@healthtrack/api": ["../../../packages/api/src"],
-      "@healthtrack/ui": ["../../../packages/ui/src"],
-      "@healthtrack/auth": ["../../../packages/auth/src"]
+      "@healthtrack/auth": ["../../../packages/auth/src"],
+      "@healthtrack/types": ["../../../packages/types/src"],
+      "@healthtrack/ui": ["../../../packages/ui/src"]
     }
-  }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "../../../packages/auth/src/**/*.ts",
+    "../../../packages/api/src/**/*.ts",
+    "../../../packages/types/src/**/*.ts",
+    "../../../packages/ui/src/**/*.ts"
+  ]
 }

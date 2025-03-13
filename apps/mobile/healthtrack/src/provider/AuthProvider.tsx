@@ -1,6 +1,6 @@
 import React from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { createAuthProvider } from '@healthtrack/auth';
+import {  createAuthProvider } from '@healthtrack/auth'
 import { AuthStorage, AuthNavigation } from '@healthtrack/types';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../hooks/useAuth';
