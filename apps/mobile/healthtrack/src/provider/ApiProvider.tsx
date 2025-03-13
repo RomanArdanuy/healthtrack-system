@@ -1,4 +1,3 @@
-// apps/mobile/healthtrack/src/providers/ApiProvider.tsx
 import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { 

@@ -1,21 +1,32 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-      "outDir": "./dist",
-      "rootDir": "./src",
-      "baseUrl": "./src",
-      "jsx": "react-jsx",
-      "lib": ["dom", "dom.iterable", "esnext"],
-      "paths": {
-        "@healthtrack/types": ["../../types/src"],
-        "@healthtrack/api": ["../../api/src"]
-      }
-    },
+        "composite": true,  
+        "target": "es5",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "preserve",
+        "outDir": "./dist",
+        "declaration": true,
+          "paths": {
+            "@healthtrack/types": ["../../types/src"],
+            "@healthtrack/api": ["../../api/src"]
+          }
+      },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"],
     "references": [
       {
-        "path": "../types"
+        "path": "../types",
+        
       },
       {
         "path": "../api"

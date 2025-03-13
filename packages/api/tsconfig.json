@@ -4,6 +4,7 @@
     "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "strict": true,
+    "composite": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "module": "esnext",
