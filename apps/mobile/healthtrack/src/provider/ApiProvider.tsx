@@ -30,7 +30,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     loadToken();
   }, []);
   
-  // Función sincrónica que devuelve el token actual
+  // Función síncrona que devuelve el token actual
   const getToken = () => token;
   
   // Usar la factoría para crear el provider

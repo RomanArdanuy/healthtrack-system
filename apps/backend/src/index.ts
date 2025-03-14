@@ -10,16 +10,28 @@ dotenv.config();
 
 // Inicializar express
 const app = express();
-const PORT = process.env.PORT || 3001;
+// Convert PORT to a number to fix the type error
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 // Middleware
-app.use(cors());
+// CORS configuration for allowing mobile connections
+app.use(cors({
+  origin: '*', // During development, allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // Logging simple
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).send('HealthTrack API is running');
 });
 
 // Rutas
@@ -47,9 +59,9 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+// Listen on all interfaces
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en puerto ${PORT} y visible desde fuera`);
+  console.log(`API accesible en http://localhost:${PORT}/api`);
+  console.log(`Para dispositivos móviles, usa la IP de tu ordenador`);
 });
-

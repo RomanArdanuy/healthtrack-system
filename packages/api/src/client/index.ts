@@ -1,10 +1,20 @@
 import axios, { AxiosInstance } from 'axios';
 import { User, Patient, Professional, Appointment, Message, Conversation } from '@healthtrack/types';
+import { Platform } from 'react-native';
 
 // Creamos una instancia de Axios con configuración base
 const createApiClient = (baseURL?: string, token?: string): AxiosInstance => {
+  // Determine correct API URL based on platform
+  const defaultApiUrl = Platform.OS === 'ios' || Platform.OS === 'android'
+    ? 'http://192.168.1.36:3001/api' // Replace X with your actual IP
+    : 'http://localhost:3001/api';
+  
+  const apiUrl = baseURL || process.env.API_URL || defaultApiUrl;
+  
+  console.log("[HealthTrack] API connecting to:", apiUrl);
+  
   const apiClient = axios.create({
-    baseURL: baseURL || process.env.API_URL || 'http://localhost:3001/api',
+    baseURL: apiUrl,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -15,15 +25,20 @@ const createApiClient = (baseURL?: string, token?: string): AxiosInstance => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log("[HealthTrack] Request:", config.method?.toUpperCase(), config.url);
     return config;
   });
 
   // Interceptor para manejar errores de respuesta
   apiClient.interceptors.response.use(
-    (response) => response.data,
+    (response) => {
+      console.log("[HealthTrack] Response success:", response.status);
+      return response.data;
+    },
     (error) => {
       const errorMessage = error.response?.data?.message || 'Error en la petición';
-      console.error('API error:', errorMessage);
+      console.error('[HealthTrack] API error:', errorMessage);
+      console.error('[HealthTrack] Full error:', error.message);
       return Promise.reject(error);
     }
   );
