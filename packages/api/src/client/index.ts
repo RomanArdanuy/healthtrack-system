@@ -1,15 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
 import { User, Patient, Professional, Appointment, Message, Conversation } from '@healthtrack/types';
-import { Platform } from 'react-native';
+import { getPlatformApiUrl } from '../utils/platform';
 
 // Creamos una instancia de Axios con configuración base
 const createApiClient = (baseURL?: string, token?: string): AxiosInstance => {
-  // Determine correct API URL based on platform
-  const defaultApiUrl = Platform.OS === 'ios' || Platform.OS === 'android'
-    ? 'http://192.168.1.36:3001/api' // Replace X with your actual IP
-    : 'http://localhost:3001/api';
-  
-  const apiUrl = baseURL || process.env.API_URL || defaultApiUrl;
+  // Use the platform utility to get the appropriate URL
+  const apiUrl = getPlatformApiUrl(baseURL);
   
   console.log("[HealthTrack] API connecting to:", apiUrl);
   
@@ -18,6 +14,7 @@ const createApiClient = (baseURL?: string, token?: string): AxiosInstance => {
     headers: {
       'Content-Type': 'application/json',
     },
+    timeout: 10000,
   });
 
   // Interceptor para añadir el token de autenticación

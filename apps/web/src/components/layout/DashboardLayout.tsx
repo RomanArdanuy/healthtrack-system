@@ -1,4 +1,3 @@
-// apps/web/src/components/layout/DashboardLayout.tsx
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';

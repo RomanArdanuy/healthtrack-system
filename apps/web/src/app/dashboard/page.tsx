@@ -1,4 +1,4 @@
-// apps/web/src/app/dashboard/page.tsx
+//dashboard page
 'use client';
 
 import { useEffect, useState } from 'react';
